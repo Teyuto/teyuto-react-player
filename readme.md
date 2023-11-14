@@ -34,12 +34,12 @@ const App = () => {
 
   const handlePlay = (data) => {
     console.log('Play event received', data);
-    // Puoi gestire l'evento di riproduzione qui
+   // You can handle the playback event here
   };
 
   const handlePause = (data) => {
     console.log('Pause event received', data);
-    // Puoi gestire l'evento di pausa qui
+   // You can handle the pause event here
   };
 
   const teyutoPlayerRef = useRef(null);
