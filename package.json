@@ -25,7 +25,8 @@
     ],
     "scripts": {
         "tslint": "tslint --project .",
-        "test": "jest",
+        "build": "rollup -c",
+        "watch": "rollup -c -w",
         "prepublishOnly": "npm run build"
     },
     "husky": {
