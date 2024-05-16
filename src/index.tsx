@@ -103,7 +103,9 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlay
           webkitallowfullscreen="true"
           mozallowfullscreen="true"
           scrolling="no"
-        ></iframe>
+          // Utilizza l'attributo 'as' per specificare il tipo dell'elemento
+          as="iframe"
+        />
       ) : (
         <div
           style={{
@@ -128,7 +130,9 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlay
             webkitallowfullscreen="true"
             mozallowfullscreen="true"
             scrolling="no"
-          ></iframe>
+            // Utilizza l'attributo 'as' per specificare il tipo dell'elemento
+            as="iframe"
+          />
         </div>
       )}
     </>
