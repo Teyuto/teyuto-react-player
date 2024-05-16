@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, DetailedHTMLProps, IframeHTMLAttributes } from 'react';
 
 interface PlayerOptions {
   autoplay: boolean;
@@ -99,7 +99,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: PlayerProp
           width={options.width}
           height={options.height}
           src={`https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`}
-          frameBorder="0"
+          frameBorder={0}
           allowFullScreen={true}
           webkitallowfullscreen="true"
           mozallowfullscreen="true"
@@ -124,7 +124,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: PlayerProp
               height: '100%',
             }}
             src={`https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`}
-            frameBorder="0"
+            frameBorder={0}
             allowFullScreen={true}
             webkitallowfullscreen="true"
             mozallowfullscreen="true"
