@@ -1,122 +1,124 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
-let TeyutoPlayerCurrentTimeValue = 0;
-let TeyutoPlayerCurrentVolumeValue = 0;
-
-const TeyutoPlayer = ({ posElem, obj }) => {
-  const [iframe, setIframe] = useState(null);
+const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }, ref) => {
+  const iframeRef = useRef(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [currentVolume, setCurrentVolume] = useState(0);
 
   useEffect(() => {
-    if (!obj.channel) {
-      console.error("Missing channel header");
-      return false;
-    }
+    const uniqueVal = (Math.random() + 1).toString(36).substring(7);
 
-    const createIframe = () => {
-      const elem = document.querySelector(posElem);
-      const channel = obj.channel;
-      let options = { ...obj.options }; // Using object spread to clone options object
-      const idVideo = obj.id;
-
-      if (!options.height) options.height = 315;
-      if (!options.width) options.width = 560;
-      if (!options.autoplay) options.autoplay = 'on';
-      if (!options.muted) options.muted = 'off';
-      if (!options.controls) options.controls = 'on';
-      if (!options.playbackRates) options.playbackRates = 'on';
-      if (!options.qualitySelector) options.qualitySelector = 'on';
-      if (!options.playerColor) options.playerColor = '';
-      if (!options.loop) options.loop = 'off';
-      if (!options.captions) options.captions = 'on';
-      if (!options.pip) options.pip = 'off';
-      if (!options.seekButtons) options.seekButtons = 'off';
-      if (!options.lowLatency) options.lowLatency = 'off';
-      if (!options.token) options.token = '';
-
-      const uniqueVal = (Math.random() + 1).toString(36).substring(7);
-
-      const urlIframe = `https://teyuto.tv/video/player?w=${idVideo}&cid=${channel}&token=${options.token}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}&seekButtons=${options.seekButtons}&lowLatency=${options.lowLatency}`;
-
-      const videoframe = options.responsive !== 'on' ?
-        `<iframe id="iframePlayerTeyuto-${uniqueVal}" width="${options.width}" height="${options.height}" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>` :
-        `<div style="position: relative;padding-bottom: 56.25%;height: 0; overflow: hidden;"><iframe id="iframePlayerTeyuto-${uniqueVal}" style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"> </iframe></div>`;
-
-      elem.innerHTML += videoframe;
-
-      setIframe(document.getElementById(`iframePlayerTeyuto-${uniqueVal}`));
-    };
-
-    createIframe();
+    const urlIframe = `https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`;
 
     const refreshData = setInterval(() => {
       try {
-        iframe.contentWindow.postMessage({ function: "getCurrentTime" }, '*');
-        iframe.contentWindow.postMessage({ function: "getVolume" }, '*');
+        iframeRef.current.contentWindow.postMessage(
+          { function: 'getCurrentTime' },
+          '*'
+        );
+
+        iframeRef.current.contentWindow.postMessage(
+          { function: 'getVolume' },
+          '*'
+        );
       } catch (e) {
         clearInterval(refreshData);
       }
     }, 1000);
 
-    return () => clearInterval(refreshData);
-  }, [posElem, obj, iframe]);
+    const handleMessage = ({ data }) => {
+      try {
+        const event = JSON.parse(data);
+        if (event.type === 'currentTime') {
+          setCurrentTime(event.value);
+        } else if (event.type === 'volume') {
+          setCurrentVolume(event.value);
+        } else if (event.type === 'play') {
+          onPlay && onPlay(event.data); // Chiamata alla callback onPlay se definita
+        } else if (event.type === 'pause') {
+          onPause && onPause(event.data); // Chiamata alla callback onPause se definita
+        } else {
+          // Emettere un evento personalizzato se non è uno degli eventi predefiniti
+          document.dispatchEvent(new CustomEvent(event.type, { detail: { idVideo: event.idVideo, data: event.data } }));
+        }
+      } catch (e) {}
+    };
 
-  const play = () => {
-    iframe.contentWindow.postMessage({ function: "play" }, '*');
-  };
-
-  const pause = () => {
-    iframe.contentWindow.postMessage({ function: "pause" }, '*');
-  };
-
-  const getCurrentTime = () => {
-    return TeyutoPlayerCurrentTimeValue;
-  };
-
-  const setCurrentTime = (param) => {
-    iframe.contentWindow.postMessage({ function: "setCurrentTime", param }, '*');
-  };
-
-  const mute = () => {
-    iframe.contentWindow.postMessage({ function: "mute" }, '*');
-  };
-
-  const unmute = () => {
-    iframe.contentWindow.postMessage({ function: "unmute" }, '*');
-  };
-
-  const setVolume = (param) => {
-    iframe.contentWindow.postMessage({ function: "setVolume", param }, '*');
-  };
-
-  const getVolume = () => {
-    return TeyutoPlayerCurrentVolumeValue;
-  };
-
-  const eventListener = ({ data }) => {
-    try {
-      const event = JSON.parse(data);
-      if (event.type === 'currentTime') {
-        TeyutoPlayerCurrentTimeValue = event.value;
-      } else if (event.type === 'volume') {
-        TeyutoPlayerCurrentVolumeValue = event.value;
-      } else {
-        const elem = document.querySelector(posElem);
-        elem.dispatchEvent(new CustomEvent(event.type, { detail: { idVideo: event.idVideo, data: event.data } }));
-      }
-    } catch (e) {
-      console.error("Error parsing event data", e);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener('message', eventListener);
+    window.addEventListener('message', handleMessage);
 
     return () => {
-      window.removeEventListener('message', eventListener);
+      clearInterval(refreshData);
+      window.removeEventListener('message', handleMessage);
     };
-  }, []);
+  }, [id, options.autoplay, options.muted, options.controls, options.playbackRates, options.qualitySelector, options.playerColor, options.loop, options.captions]);
 
-  return null; // Since this component doesn't render anything visible
-};
+  // Aggiungi questa sezione per esporre le funzioni al componente padre
+  useImperativeHandle(ref, () => ({
+    play: () => {
+      iframeRef.current.contentWindow.postMessage({ function: 'play' }, '*');
+    },
+    pause: () => {
+      iframeRef.current.contentWindow.postMessage({ function: 'pause' }, '*');
+    },
+    setVolume: (volume) => {
+      iframeRef.current.contentWindow.postMessage(
+        { function: 'setVolume', param: volume },
+        '*'
+      );
+    },
+    getCurrentTime: () => currentTime,
+    getVolume: () => currentVolume,
+    setCurrentTime: (time) => {
+      iframeRef.current.contentWindow.postMessage(
+        { function: 'setCurrentTime', param: time },
+        '*'
+      );
+    },
+  }));
 
-export default TeyutoPlayer;
+  return (
+    <>
+      {options.responsive !== 'on' ? (
+        <iframe
+          ref={iframeRef}
+          width={options.width}
+          height={options.height}
+          src={urlIframe}
+          frameBorder="0"
+          allowFullScreen={true}
+          webkitallowfullscreen="true"
+          mozallowfullscreen="true"
+          scrolling="no"
+        ></iframe>
+      ) : (
+        <div
+          style={{
+            position: 'relative',
+            paddingBottom: '56.25%',
+            height: 0,
+            overflow: 'hidden',
+          }}
+        >
+          <iframe
+            ref={iframeRef}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+            }}
+            src={urlIframe}
+            frameBorder="0"
+            allowFullScreen={true}
+            webkitallowfullscreen="true"
+            mozallowfullscreen="true"
+            scrolling="no"
+          ></iframe>
+        </div>
+      )}
+    </>
+  );
+});
+
+export default TeyutoPlayerSdk;
