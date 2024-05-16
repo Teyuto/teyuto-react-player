@@ -27,8 +27,6 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: PlayerProp
   const [currentVolume, setCurrentVolume] = useState(0);
 
   useEffect(() => {
-    const uniqueVal = (Math.random() + 1).toString(36).substring(7);
-
     const urlIframe = `https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`;
 
     const refreshData = setInterval(() => {
