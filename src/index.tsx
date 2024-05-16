@@ -82,7 +82,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlay
     },
     getCurrentTime: () => currentTime,
     getVolume: () => currentVolume,
-    setCurrentTime: (time) => {
+    setCurrentTime: (time: number) => {
       iframeRef.current?.contentWindow?.postMessage(
         { function: 'setCurrentTime', param: time },
         '*'
