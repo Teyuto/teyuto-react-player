@@ -27,8 +27,6 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: PlayerProp
   const [currentVolume, setCurrentVolume] = useState(0);
 
   useEffect(() => {
-    const urlIframe = `https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`;
-
     const refreshData = setInterval(() => {
       try {
         iframeRef.current!.contentWindow!.postMessage(
@@ -100,7 +98,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: PlayerProp
           ref={iframeRef}
           width={options.width}
           height={options.height}
-          src={urlIframe}
+          src={`https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`}
           frameBorder="0"
           allowFullScreen={true}
           webkitallowfullscreen="true"
@@ -125,7 +123,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: PlayerProp
               width: '100%',
               height: '100%',
             }}
-            src={urlIframe}
+            src={`https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`}
             frameBorder="0"
             allowFullScreen={true}
             webkitallowfullscreen="true"
