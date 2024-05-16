@@ -72,7 +72,7 @@ const TeyutoPlayer = ({ posElem, obj }) => {
       videoframe = `<div style="position: relative;padding-bottom: 56.25%;height: 0; overflow: hidden;"><iframe id="iframePlayerTeyuto-${uniqueVal}" style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"> </iframe></div>`;
     }
 
-    document.querySelector(`' + ${posElem} + '`).innerHTML += videoframe;
+    document.querySelector(posElem).innerHTML += videoframe;
 
     const iframe = document.getElementById(`iframePlayerTeyuto-${uniqueVal}`);
     setIframe(iframe);
