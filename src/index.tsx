@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, RefObject, IframeHTMLAttributes } from 'react';
 
 interface TeyutoPlayerSdkProps {
   id: string;
@@ -103,8 +103,9 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlay
           webkitallowfullscreen="true"
           mozallowfullscreen="true"
           scrolling="no"
+          {...(options.responsive !== 'on' ? {} : { style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' } })}
           // Utilizza l'attributo 'as' per specificare il tipo dell'elemento
-          as="iframe"
+          // as="iframe"
         />
       ) : (
         <div
@@ -131,7 +132,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlay
             mozallowfullscreen="true"
             scrolling="no"
             // Utilizza l'attributo 'as' per specificare il tipo dell'elemento
-            as="iframe"
+            // as="iframe"
           />
         </div>
       )}
