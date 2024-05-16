@@ -24,7 +24,7 @@ const App = () => {
 
   const obj = {
     channel: '<CHANNEL_ID_PUBLIC>', //required
-    id: '<VIDEO_ID>'  //required
+    id: '<VIDEO_ID>',  //required
     options: {
       autoplay: 'on',
       muted: 'off',
