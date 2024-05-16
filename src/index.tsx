@@ -74,7 +74,7 @@ const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlay
     pause: () => {
       iframeRef.current?.contentWindow?.postMessage({ function: 'pause' }, '*');
     },
-    setVolume: (volume) => {
+    setVolume: (volume: number) => {
       iframeRef.current?.contentWindow?.postMessage(
         { function: 'setVolume', param: volume },
         '*'
