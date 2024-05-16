@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, DetailedHTMLProps, IframeHTMLAttributes } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, IframeHTMLAttributes } from 'react';
 
 interface PlayerOptions {
   autoplay: boolean;
