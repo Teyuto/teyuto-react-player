@@ -28,7 +28,7 @@ interface TeyutoPlayerSdkRef {
   setCurrentTime: (time: number) => void;
 }
 
-const TeyutoPlayerSdk = forwardRef<HTMLIFrameElement & TeyutoPlayerSdkRef, TeyutoPlayerSdkProps>((props, ref) => {
+const TeyutoPlayerSdk = forwardRef<any, TeyutoPlayerSdkProps>((props, ref) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentVolume, setCurrentVolume] = useState(0);
