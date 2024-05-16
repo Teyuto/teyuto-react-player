@@ -97,7 +97,7 @@ const TeyutoPlayerSdk = forwardRef<HTMLIFrameElement, TeyutoPlayerSdkProps>((pro
         '*'
       );
     },
-  }));
+  } as TeyutoPlayerSdkRef)); // Specifica il tipo di interfaccia qui
 
   return (
     <>
