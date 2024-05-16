@@ -28,7 +28,7 @@ interface TeyutoPlayerSdkRef {
   setCurrentTime: (time: number) => void;
 }
 
-const TeyutoPlayerSdk = forwardRef<HTMLIFrameElement, TeyutoPlayerSdkProps>((props, ref) => {
+const TeyutoPlayerSdk = forwardRef<HTMLIFrameElement & TeyutoPlayerSdkRef, TeyutoPlayerSdkProps>((props, ref) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentVolume, setCurrentVolume] = useState(0);
@@ -97,7 +97,7 @@ const TeyutoPlayerSdk = forwardRef<HTMLIFrameElement, TeyutoPlayerSdkProps>((pro
         '*'
       );
     },
-  } as TeyutoPlayerSdkRef)); // Specifica il tipo di interfaccia qui
+  }));
 
   return (
     <>
