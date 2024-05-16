@@ -4,7 +4,7 @@
 
 [Teyuto](https://teyuto.com) provides a seamless solution for managing all your video distribution needs. Whether you require video distribution in the cloud, on OTT platforms, storage, public OTT platform distribution, or secure intranet distribution, Teyuto puts everything at your fingertips, making the management of your video content effortless.
 
-`TeyutoPlayerSdk` is a React library that allows you to embed a Teyuto video player in a React app.
+`Teyuto React Player` is a React library that allows you to embed a Teyuto Video Player in a React app.
 
 ## Installation
 
@@ -14,46 +14,55 @@ npm install --save @teyuto/react-player
 
 # Usage
 ```jsx
-import React, { useRef } from 'react';
-import TeyutoPlayer from './TeyutoPlayer';
+import React, { useState, useEffect, useRef } from 'react';
+import TeyutoPlayer from '@teyuto/react-player';
 
 const App = () => {
-  const options = {
-    autoplay: 'on',
-    muted: 'on',
-    controls: 'on',
-    responsive: 'off',
-    width: 560,
-    height: 300,
-    playbackRates: 'on',
-    qualitySelector: 'on',
-    playerColor: '#dddddd',
-    loop: 'off',
-    captions: 'on',
-  };
-
-  const handlePlay = (data) => {
-    console.log('Play event received', data);
-   // You can handle the playback event here
-  };
-
-  const handlePause = (data) => {
-    console.log('Pause event received', data);
-   // You can handle the pause event here
-  };
-
+  const [currentTime, setCurrentTime] = useState(0);
+  const [volume, setVolume] = useState(0);
   const teyutoPlayerRef = useRef(null);
+
+  const obj = {
+    channel: '<CHANNEL_ID_PUBLIC>', //required
+    id: '<VIDEO_ID>'  //required
+    options: {
+      autoplay: 'on',
+      muted: 'off',
+      controls: 'on',
+      playbackRates: 'on',
+      qualitySelector: 'on',
+      playerColor: '#dddddd',
+      loop: 'off',
+      captions: 'on',
+      seekButtons: 'off',
+      lowLatency: 'off',
+      token: 'your_api_token'
+    }
+  };
+
+  const handlePlay = () => {
+    console.log('Video started playing');
+  };
+
+  const handlePause = () => {
+    console.log('Video paused');
+  };
 
   return (
     <div>
-      <TeyutoPlayerSdk
-        id="<VIDEO_ID>"
-        options={options}
+      <h1>Teyuto Player Example</h1>
+      <TeyutoPlayer
+        ref={teyutoPlayerRef}
+        posElem="#player-container"
+        obj={obj}
         onPlay={handlePlay}
         onPause={handlePause}
-        ref={teyutoPlayerRef}
+        onTimeUpdate={(time) => setCurrentTime(time)}
+        onVolumeChange={(vol) => setVolume(vol)}
       />
-
+      <div id="player-container"></div>
+      <p>Current Time: {currentTime}</p>
+      <p>Current Volume: {volume}</p>
       <button onClick={() => teyutoPlayerRef.current.play()}>Play</button>
       <button onClick={() => teyutoPlayerRef.current.pause()}>Pause</button>
       <button onClick={() => teyutoPlayerRef.current.setVolume(0)}>Mute</button>
@@ -64,7 +73,7 @@ const App = () => {
       <button onClick={() => teyutoPlayerRef.current.setVolume(0.5)}>SetVolume (0.5)</button>
     </div>
   );
-};
+}
 
 export default App;
 ```
