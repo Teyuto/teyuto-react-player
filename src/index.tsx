@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle, RefObject, IframeHTMLAttributes } from 'react';
+import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 
 interface TeyutoPlayerSdkProps {
   id: string;
@@ -19,7 +19,7 @@ interface TeyutoPlayerSdkProps {
   onPause?: (data: any) => void;
 }
 
-const TeyutoPlayerSdk = forwardRef(({ id, options, onPlay, onPause }: TeyutoPlayerSdkProps, ref) => {
+const TeyutoPlayerSdk = forwardRef<HTMLIFrameElement | null, TeyutoPlayerSdkProps>(({ id, options, onPlay, onPause }: TeyutoPlayerSdkProps, ref) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentVolume, setCurrentVolume] = useState(0);
