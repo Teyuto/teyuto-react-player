@@ -23,7 +23,7 @@ const App = () => {
   const teyutoPlayerRef = useRef(null);
 
   const obj = {
-    channel: '<CHANNEL_ID_PUBLIC>', //required
+    channel: '<CHANNEL_PUBLIC>', //required
     id: '<VIDEO_ID>',  //required
     options: {
       autoplay: 'on',
