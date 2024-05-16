@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface TeyutoPlayerSdkProps {
   id: string;
@@ -19,20 +19,14 @@ interface TeyutoPlayerSdkProps {
   onPause?: (data: any) => void;
 }
 
-interface TeyutoPlayerSdkRef {
-  play: () => void;
-  pause: () => void;
-  setVolume: (volume: number) => void;
-  getCurrentTime: () => number;
-  getVolume: () => number;
-  setCurrentTime: (time: number) => void;
-}
-
-const TeyutoPlayerSdk = forwardRef<any, TeyutoPlayerSdkProps>((props, ref) => {
+const TeyutoPlayerSdk: React.ForwardRefRenderFunction<HTMLIFrameElement, TeyutoPlayerSdkProps> = (
+  { id, options, onPlay, onPause },
+  ref
+) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentVolume, setCurrentVolume] = useState(0);
-  const urlIframe = `https://teyuto.tv/video/player?w=${props.id}&auto=${props.options.autoplay}&muted=${props.options.muted}&controls=${props.options.controls}&playbackRates=${props.options.playbackRates}&qualitySelector=${props.options.qualitySelector}&playerColor=${props.options.playerColor}&loop=${props.options.loop}&captions=${props.options.captions}`;
+  const urlIframe = `https://teyuto.tv/video/player?w=${id}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}`;
 
   useEffect(() => {
     const refreshData = setInterval(() => {
@@ -59,9 +53,9 @@ const TeyutoPlayerSdk = forwardRef<any, TeyutoPlayerSdkProps>((props, ref) => {
         } else if (event.type === 'volume') {
           setCurrentVolume(event.value);
         } else if (event.type === 'play') {
-          props.onPlay && props.onPlay(event.data); 
+          onPlay && onPlay(event.data); 
         } else if (event.type === 'pause') {
-          props.onPause && props.onPause(event.data); 
+          onPause && onPause(event.data); 
         } else {
           document.dispatchEvent(new CustomEvent(event.type, { detail: { idVideo: event.idVideo, data: event.data } }));
         }
@@ -74,47 +68,22 @@ const TeyutoPlayerSdk = forwardRef<any, TeyutoPlayerSdkProps>((props, ref) => {
       clearInterval(refreshData);
       window.removeEventListener('message', handleMessage);
     };
-  }, [props.id, props.options.autoplay, props.options.muted, props.options.controls, props.options.playbackRates, props.options.qualitySelector, props.options.playerColor, props.options.loop, props.options.captions, props.onPlay, props.onPause]);
-
-  useImperativeHandle(ref, () => ({
-    play: () => {
-      iframeRef.current?.contentWindow?.postMessage({ function: 'play' }, '*');
-    },
-    pause: () => {
-      iframeRef.current?.contentWindow?.postMessage({ function: 'pause' }, '*');
-    },
-    setVolume: (volume: number) => {
-      iframeRef.current?.contentWindow?.postMessage(
-        { function: 'setVolume', param: volume },
-        '*'
-      );
-    },
-    getCurrentTime: () => currentTime,
-    getVolume: () => currentVolume,
-    setCurrentTime: (time: number) => {
-      iframeRef.current?.contentWindow?.postMessage(
-        { function: 'setCurrentTime', param: time },
-        '*'
-      );
-    },
-  }));
+  }, [id, options.autoplay, options.muted, options.controls, options.playbackRates, options.qualitySelector, options.playerColor, options.loop, options.captions, onPlay, onPause]);
 
   return (
     <>
-      {props.options.responsive !== 'on' ? (
+      {options.responsive !== 'on' ? (
         <iframe
-          ref={iframeRef}
-          width={props.options.width}
-          height={props.options.height}
+          ref={ref}
+          width={options.width}
+          height={options.height}
           src={urlIframe}
           frameBorder="0"
           allowFullScreen={true}
           webkitallowfullscreen="true"
           mozallowfullscreen="true"
           scrolling="no"
-          {...(props.options.responsive !== 'on' ? {} : { style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' } })}
-          // Utilizza l'attributo 'as' per specificare il tipo dell'elemento
-          // as="iframe"
+          {...(options.responsive !== 'on' ? {} : { style: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' } })}
         />
       ) : (
         <div
@@ -126,7 +95,7 @@ const TeyutoPlayerSdk = forwardRef<any, TeyutoPlayerSdkProps>((props, ref) => {
           }}
         >
           <iframe
-            ref={iframeRef}
+            ref={ref}
             style={{
               position: 'absolute',
               top: 0,
@@ -140,13 +109,11 @@ const TeyutoPlayerSdk = forwardRef<any, TeyutoPlayerSdkProps>((props, ref) => {
             webkitallowfullscreen="true"
             mozallowfullscreen="true"
             scrolling="no"
-            // Utilizza l'attributo 'as' per specificare il tipo dell'elemento
-            // as="iframe"
           />
         </div>
       )}
     </>
   );
-});
+};
 
-export default TeyutoPlayerSdk;
+export default React.forwardRef(TeyutoPlayerSdk);
