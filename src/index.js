@@ -5,6 +5,7 @@ let TeyutoPlayerCurrentVolumeValue = 0;
 
 const TeyutoPlayer = forwardRef(({ posElem, obj, onPlay, onPause, onTimeUpdate, onVolumeChange }, ref) => {
   const [iframe, setIframe] = useState(null);
+  const uniqueVal = React.useRef((Math.random() + 1).toString(36).substring(7)).current;
 
   useEffect(() => {
     if (!obj.channel) {
@@ -16,10 +17,6 @@ const TeyutoPlayer = forwardRef(({ posElem, obj, onPlay, onPause, onTimeUpdate, 
     const channel = obj.channel;
     const options = obj.options;
     const idVideo = obj.id;
-
-    let videoframe = '';
-
-    let uniqueVal = (Math.random() + 1).toString(36).substring(7);
 
     const defaults = {
       height: 315,
@@ -42,13 +39,22 @@ const TeyutoPlayer = forwardRef(({ posElem, obj, onPlay, onPause, onTimeUpdate, 
 
     const urlIframe = `https://teyuto.tv/video/player?w=${idVideo}&cid=${channel}&token=${finalOptions.token}&auto=${finalOptions.autoplay}&muted=${finalOptions.muted}&controls=${finalOptions.controls}&playbackRates=${finalOptions.playbackRates}&qualitySelector=${finalOptions.qualitySelector}&playerColor=${finalOptions.playerColor}&loop=${finalOptions.loop}&captions=${finalOptions.captions}&seekButtons=${finalOptions.seekButtons}&lowLatency=${finalOptions.lowLatency}`;
 
+    const iframeContainer = document.querySelector(posElem);
+
+    // Remove existing iframe if it exists
+    const existingIframe = document.getElementById(`iframePlayerTeyuto-${uniqueVal}`);
+    if (existingIframe) {
+      iframeContainer.removeChild(existingIframe.parentNode);
+    }
+
+    let videoframe;
     if (finalOptions.responsive !== 'on') {
       videoframe = `<iframe id="iframePlayerTeyuto-${uniqueVal}" width="${finalOptions.width}" height="${finalOptions.height}" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>`;
     } else {
       videoframe = `<div style="position: relative;padding-bottom: 56.25%;height: 0; overflow: hidden;"><iframe id="iframePlayerTeyuto-${uniqueVal}" style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe></div>`;
     }
 
-    document.querySelector(posElem).innerHTML += videoframe;
+    iframeContainer.innerHTML = videoframe;
 
     const iframeElement = document.getElementById(`iframePlayerTeyuto-${uniqueVal}`);
     setIframe(iframeElement);
@@ -73,8 +79,13 @@ const TeyutoPlayer = forwardRef(({ posElem, obj, onPlay, onPause, onTimeUpdate, 
       }
     }, 1000);
 
-    return () => clearInterval(refreshData);
-  }, [obj, posElem]);
+    return () => {
+      clearInterval(refreshData);
+      if (iframeElement && iframeElement.parentNode) {
+        iframeElement.parentNode.removeChild(iframeElement);
+      }
+    };
+  }, [obj, posElem, uniqueVal]);
 
   useImperativeHandle(ref, () => ({
     play: () => {
