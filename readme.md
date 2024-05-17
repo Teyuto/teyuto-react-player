@@ -14,12 +14,13 @@ npm install --save @teyuto/react-player
 
 # Usage
 ```jsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import TeyutoPlayer from '@teyuto/react-player';
 
+
 const App = () => {
-  const [currentTime, setCurrentTime] = useState(0);
-  const [volume, setVolume] = useState(0);
+  const [setCurrentTime] = useState(0);
+  const [setVolume] = useState(0);
   const teyutoPlayerRef = useRef(null);
 
   const obj = {
@@ -50,19 +51,14 @@ const App = () => {
 
   return (
     <div>
-      <h1>Teyuto Player Example</h1>
       <TeyutoPlayer
         ref={teyutoPlayerRef}
         posElem="#player-container"
         obj={obj}
         onPlay={handlePlay}
         onPause={handlePause}
-        onTimeUpdate={(time) => setCurrentTime(time)}
-        onVolumeChange={(vol) => setVolume(vol)}
       />
       <div id="player-container"></div>
-      <p>Current Time: {currentTime}</p>
-      <p>Current Volume: {volume}</p>
       <button onClick={() => teyutoPlayerRef.current.play()}>Play</button>
       <button onClick={() => teyutoPlayerRef.current.pause()}>Pause</button>
       <button onClick={() => teyutoPlayerRef.current.setVolume(0)}>Mute</button>
