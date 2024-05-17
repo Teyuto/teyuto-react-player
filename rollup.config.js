@@ -1,5 +1,5 @@
 export default {
-    input: 'src/index.js',
+    input: 'src/TeyutoPlayer.js',
     output: [{
         file: 'dist/index.js',
         format: 'cjs',
