@@ -9,7 +9,7 @@
 ## Installation
 
 ```bash
-npm install --save @teyuto/react-player
+npm i @teyuto/react-player
 ```
 
 # Usage
