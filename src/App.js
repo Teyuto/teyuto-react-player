@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import TeyutoPlayer from './TeyutoPlayer';
+import TeyutoPlayer from '.';
 
 const App = () => {
   const [setCurrentTime] = useState(0);
