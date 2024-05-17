@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 
 let TeyutoPlayerCurrentTimeValue = 0;
 let TeyutoPlayerCurrentVolumeValue = 0;
 
-const TeyutoPlayer = ({ posElem, obj }) => {
+const TeyutoPlayer = forwardRef(({ posElem, obj, onPlay, onPause, onTimeUpdate, onVolumeChange }, ref) => {
   const [iframe, setIframe] = useState(null);
 
   useEffect(() => {
     if (!obj.channel) {
       console.error("Missing channel header");
-      return false;
+      return;
     }
     console.log("INIT Teyuto Player SDK");
 
@@ -21,72 +21,48 @@ const TeyutoPlayer = ({ posElem, obj }) => {
 
     let uniqueVal = (Math.random() + 1).toString(36).substring(7);
 
-    if (!options.height) {
-      options.height = 315;
-    }
-    if (!options.width) {
-      options.width = 560;
-    }
-    if (!options.autoplay) {
-      options.autoplay = 'on';
-    }
-    if (!options.muted) {
-      options.muted = 'off';
-    }
-    if (!options.controls) {
-      options.controls = 'on';
-    }
-    if (!options.playbackRates) {
-      options.playbackRates = 'on';
-    }
-    if (!options.qualitySelector) {
-      options.qualitySelector = 'on';
-    }
-    if (!options.playerColor) {
-      options.playerColor = '';
-    }
-    if (!options.loop) {
-      options.loop = 'off';
-    }
-    if (!options.captions) {
-      options.captions = 'on';
-    }
-    if (!options.pip) {
-      options.pip = 'off';
-    }
-    if (!options.seekButtons) {
-      options.seekButtons = 'off';
-    }
-    if (!options.lowLatency) {
-      options.lowLatency = 'off';
-    }
-    if (!options.token) {
-      options.token = '';
-    }
+    const defaults = {
+      height: 315,
+      width: 560,
+      autoplay: 'on',
+      muted: 'off',
+      controls: 'on',
+      playbackRates: 'on',
+      qualitySelector: 'on',
+      playerColor: '',
+      loop: 'off',
+      captions: 'on',
+      pip: 'off',
+      seekButtons: 'off',
+      lowLatency: 'off',
+      token: ''
+    };
 
-    const urlIframe = `https://teyuto.tv/video/player?w=${idVideo}&cid=${channel}&token=${options.token}&auto=${options.autoplay}&muted=${options.muted}&controls=${options.controls}&playbackRates=${options.playbackRates}&qualitySelector=${options.qualitySelector}&playerColor=${options.playerColor}&loop=${options.loop}&captions=${options.captions}&seekButtons=${options.seekButtons}&lowLatency=${options.lowLatency}`;
+    const finalOptions = { ...defaults, ...options };
 
-    if (options.responsive !== 'on') {
-      videoframe = `<iframe id="iframePlayerTeyuto-${uniqueVal}" width="${options.width}" height="${options.height}" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>`;
+    const urlIframe = `https://teyuto.tv/video/player?w=${idVideo}&cid=${channel}&token=${finalOptions.token}&auto=${finalOptions.autoplay}&muted=${finalOptions.muted}&controls=${finalOptions.controls}&playbackRates=${finalOptions.playbackRates}&qualitySelector=${finalOptions.qualitySelector}&playerColor=${finalOptions.playerColor}&loop=${finalOptions.loop}&captions=${finalOptions.captions}&seekButtons=${finalOptions.seekButtons}&lowLatency=${finalOptions.lowLatency}`;
+
+    if (finalOptions.responsive !== 'on') {
+      videoframe = `<iframe id="iframePlayerTeyuto-${uniqueVal}" width="${finalOptions.width}" height="${finalOptions.height}" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe>`;
     } else {
-      videoframe = `<div style="position: relative;padding-bottom: 56.25%;height: 0; overflow: hidden;"><iframe id="iframePlayerTeyuto-${uniqueVal}" style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"> </iframe></div>`;
+      videoframe = `<div style="position: relative;padding-bottom: 56.25%;height: 0; overflow: hidden;"><iframe id="iframePlayerTeyuto-${uniqueVal}" style="position: absolute;top: 0;left: 0;width: 100%;height: 100%;" src="${urlIframe}" frameborder="0" allow="autoplay" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true" scrolling="no"></iframe></div>`;
     }
 
     document.querySelector(posElem).innerHTML += videoframe;
 
-    const iframe = document.getElementById(`iframePlayerTeyuto-${uniqueVal}`);
-    setIframe(iframe);
+    const iframeElement = document.getElementById(`iframePlayerTeyuto-${uniqueVal}`);
+    setIframe(iframeElement);
 
     const refreshData = setInterval(() => {
       try {
-        iframe.contentWindow.postMessage(
+        iframeElement.contentWindow.postMessage(
           {
             function: "getCurrentTime"
           },
           '*'
         );
 
-        iframe.contentWindow.postMessage(
+        iframeElement.contentWindow.postMessage(
           {
             function: "getVolume"
           },
@@ -98,93 +74,99 @@ const TeyutoPlayer = ({ posElem, obj }) => {
     }, 1000);
 
     return () => clearInterval(refreshData);
-  }, []);
+  }, [obj, posElem]);
 
-  const play = (param) => {
-    iframe.contentWindow.postMessage(
-      {
-        function: "play"
-      },
-      '*'
-    );
-  }
-
-  const pause = (param) => {
-    iframe.contentWindow.postMessage(
-      {
-        function: "pause"
-      },
-      '*'
-    );
-  }
-
-  const getCurrentTime = () => {
-    return TeyutoPlayerCurrentTimeValue;
-  }
-
-  const setCurrentTime = (param) => {
-    iframe.contentWindow.postMessage(
-      {
-        function: "setCurrentTime",
-        param: param
-      },
-      '*'
-    );
-  }
-
-  const mute = (param) => {
-    iframe.contentWindow.postMessage(
-      {
-        function: "mute"
-      },
-      '*'
-    );
-  }
-
-  const unmute = (param) => {
-    iframe.contentWindow.postMessage(
-      {
-        function: "unmute"
-      },
-      '*'
-    );
-  }
-
-  const setVolume = (param) => {
-    iframe.contentWindow.postMessage(
-      {
-        function: "setVolume",
-        param: param
-      },
-      '*'
-    );
-  }
-
-  const getVolume = (param) => {
-    return TeyutoPlayerCurrentVolumeValue;
-  }
-
-  const on = (...args) => {
-    document.querySelector(posElem).addEventListener(...args);
-  }
-
-  window.addEventListener('message', ({ data }) => {
-    try {
-      let event = JSON.parse(data);
-      if (event.type == 'currentTime') {
-        TeyutoPlayerCurrentTimeValue = event.value;
-      }
-      else if (event.type == 'volume') {
-        TeyutoPlayerCurrentVolumeValue = event.value;
-      } else {
-        document.querySelector(posElem).dispatchEvent(new CustomEvent(event.type, { detail: { idVideo: event.idVideo, data: event.data } }));
-      }
-    } catch (e) {
-
+  useImperativeHandle(ref, () => ({
+    play: () => {
+      iframe.contentWindow.postMessage(
+        {
+          function: "play"
+        },
+        '*'
+      );
+    },
+    pause: () => {
+      iframe.contentWindow.postMessage(
+        {
+          function: "pause"
+        },
+        '*'
+      );
+    },
+    getCurrentTime: () => {
+      return TeyutoPlayerCurrentTimeValue;
+    },
+    setCurrentTime: (param) => {
+      iframe.contentWindow.postMessage(
+        {
+          function: "setCurrentTime",
+          param: param
+        },
+        '*'
+      );
+    },
+    mute: () => {
+      iframe.contentWindow.postMessage(
+        {
+          function: "mute"
+        },
+        '*'
+      );
+    },
+    unmute: () => {
+      iframe.contentWindow.postMessage(
+        {
+          function: "unmute"
+        },
+        '*'
+      );
+    },
+    setVolume: (param) => {
+      iframe.contentWindow.postMessage(
+        {
+          function: "setVolume",
+          param: param
+        },
+        '*'
+      );
+    },
+    getVolume: () => {
+      return TeyutoPlayerCurrentVolumeValue;
+    },
+    on: (...args) => {
+      document.querySelector(posElem).addEventListener(...args);
     }
-  });
+  }));
+
+  useEffect(() => {
+    const handleMessage = ({ data }) => {
+      try {
+        let event = JSON.parse(data);
+        if (event.type === 'currentTime') {
+          TeyutoPlayerCurrentTimeValue = event.value;
+          if (onTimeUpdate) onTimeUpdate(event.value);
+        }
+        else if (event.type === 'volume') {
+          TeyutoPlayerCurrentVolumeValue = event.value;
+          if (onVolumeChange) onVolumeChange(event.value);
+        } else {
+          document.querySelector(posElem).dispatchEvent(new CustomEvent(event.type, { detail: { idVideo: event.idVideo, data: event.data } }));
+          if (event.type === 'play' && onPlay) onPlay();
+          if (event.type === 'pause' && onPause) onPause();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [onPlay, onPause, onTimeUpdate, onVolumeChange, posElem]);
 
   return null;
-}
+});
 
 export default TeyutoPlayer;
