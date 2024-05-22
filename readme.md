@@ -37,6 +37,8 @@ const App = () => {
       captions: 'on',
       seekButtons: 'off',
       lowLatency: 'off',
+      related: 'on',
+      relatedTags: '1,2,3',
       token: 'your_api_token'
     }
   };
