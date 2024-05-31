@@ -33,12 +33,13 @@ const TeyutoPlayer = forwardRef(({ posElem, obj, onPlay, onPause, onTimeUpdate, 
       lowLatency: 'off',
       related: '',
       relatedTags: '',
+      adTag: '',
       token: ''
     };
 
     const finalOptions = { ...defaults, ...options };
 
-    const urlIframe = `https://teyuto.tv/video/player?w=${idVideo}&cid=${channel}&token=${finalOptions.token}&auto=${finalOptions.autoplay}&muted=${finalOptions.muted}&controls=${finalOptions.controls}&playbackRates=${finalOptions.playbackRates}&qualitySelector=${finalOptions.qualitySelector}&playerColor=${finalOptions.playerColor}&loop=${finalOptions.loop}&captions=${finalOptions.captions}&seekButtons=${finalOptions.seekButtons}&lowLatency=${finalOptions.lowLatency}&related=${finalOptions.related}&relatedTags=${finalOptions.relatedTags}`;
+    const urlIframe = `https://teyuto.tv/video/player?w=${idVideo}&cid=${channel}&token=${finalOptions.token}&auto=${finalOptions.autoplay}&muted=${finalOptions.muted}&controls=${finalOptions.controls}&playbackRates=${finalOptions.playbackRates}&qualitySelector=${finalOptions.qualitySelector}&playerColor=${finalOptions.playerColor}&loop=${finalOptions.loop}&captions=${finalOptions.captions}&seekButtons=${finalOptions.seekButtons}&lowLatency=${finalOptions.lowLatency}&related=${finalOptions.related}&relatedTags=${finalOptions.relatedTags}&adTag=${finalOptions.adTag}`;
 
     const iframeElement = document.getElementById(`iframePlayerTeyuto-${idVideo}`);
     if (!iframeElement) {
